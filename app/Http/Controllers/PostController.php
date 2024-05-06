@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -20,7 +22,7 @@ class PostController extends Controller
         // $posts = Post::paginate();
         // $posts = Post::all();
         // $posts = Post::get();
-        $posts = Post::latest()->paginate(10);
+        $posts = Post::has('categories',)->paginate(10);
 
         return view('posts.index', compact('posts'));
     }
@@ -29,21 +31,34 @@ class PostController extends Controller
         return view('posts.create');
     }
 
-    public function store(Request $request) {
-        $request->validate([
-            'title' => 'required',
-            'content' => 'required',
-        ]);
-
-        // Post::create([
-        //     'title' => $request->title,
-        //     'content' => $request->content,
+    public function store() {
+        // $request->validate([
+        //     'title' => 'required',
+        //     'content' => 'required',
         // ]);
 
+        // // Post::create([
+        // //     'title' => $request->title,
+        // //     'content' => $request->content,
+        // // ]);
+
+        // $post = new Post();
+        // $post->title = $request->title;
+        // $post->content = $request->content;
+        // $post->save();
+
+        $user = User::find(1);
+
         $post = new Post();
-        $post->title = $request->title;
-        $post->content = $request->content;
+        $post->title = 'Judul Postingan 1';
+        $post->content = 'Isi Postingan 1';
+        $post->user_id = $user->id;
         $post->save();
+
+        // Menambahkan postingan ke beberapa kategori
+        $categories = Category::whereIn('id', [1, 2, 3])->get();
+
+        $post->categories()->attach($categories);
 
         return redirect()->route('posts.index')->with('success', 'Post created successfully');
 
@@ -51,6 +66,10 @@ class PostController extends Controller
 
     public function edit($id) {
         $post = Post::find($id);
+
+        $images = $post->image;
+
+        dd($images);
 
         return view('posts.edit', compact('post'));
     }
@@ -77,6 +96,9 @@ class PostController extends Controller
 
     public function delete(Request $request, $id) {
         $post = Post::find($id);
+
+        $post->categories()->detach();
+
         $post->delete();
 
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully');

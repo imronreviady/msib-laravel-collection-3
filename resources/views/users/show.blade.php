@@ -8,32 +8,28 @@
             </div>
         @endif
         <div class="d-flex justify-content-between align-items-center">
-            <h2>Post List</h2>
+            <h2>Post List By User</h2>
             <a href="{{ route('posts.create') }}" class="btn btn-dark ms-3">Create Post</a>
         </div>
+        <!-- name user -->
+        <h2>Nama: {{ $user->name }}</h2>
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>#</th>
+                    {{-- <th>#</th> --}}
                     <th>Title</th>
                     <th>Content</th>
-                    <th>Categories</th>
                     <th>Created At</th>
                     <th>Updated At</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($posts as $post)
+                @foreach ($user->posts as $post)
                     <tr>
-                        <td>{{ $loop->iteration + $posts->firstItem() - 1 }}</td>
+                        {{-- <td>{{ $loop->iteration + $users->firstItem() - 1 }}</td> --}}
                         <td>{{ $post->title }}</td>
                         <td>{{ $post->content }}</td>
-                        <td>
-                            @foreach ($post->categories as $category)
-                                <span class="badge bg-info">{{ $category->name }}</span>
-                            @endforeach
-                        </td>
                         <td>{{ $post->created_at->format('d F Y H:i') }}</td>
                         <td>{{ $post->updated_at->format('d F Y H:i') }}</td>
                         <td>
@@ -49,7 +45,7 @@
             </tbody>
         </table>
         <div class="d-flex">
-            {{ $posts->links() }}
+            {{-- {{ $posts->links() }} --}}
         </div>
     </div>
 @endsection
