@@ -15,6 +15,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Image</th>
                     <th>Nama</th>
                     <th>Email</th>
                     <th>Age</th>
@@ -28,6 +29,14 @@
                 @foreach ($users as $user)
                     <tr>
                         <td>{{ $loop->iteration + $users->firstItem() - 1 }}</td>
+                        <td>
+                            @if ($user->image)
+                                {{-- <img src="{{ asset('storage/' . $user->image->url_image) }}" width="100"> --}}
+                                <img src="{{ Storage::url($user->image->url_image) }}" width="100" alt="Image">
+                            @else
+                                <p>No Image</p>
+                            @endif
+                        </td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->profile->age }}</td>
@@ -36,7 +45,7 @@
                         <td>{{ $user->updated_at->format('d F Y H:i') }}</td>
                         <td>
                             <a href="{{ route('posts.edit', $user->id) }}" class="btn btn-warning">Edit</a>
-                            <form action="{{ route('posts.destroy', $user->id) }}" method="POST" class="d-inline">
+                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this item?');">Delete</button>

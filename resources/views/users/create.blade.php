@@ -12,7 +12,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form action="{{ route('users.store') }}" method="POST">
+            <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
@@ -78,6 +78,17 @@
                     @if ($errors->has('gender'))
                         <div class="invalid-feedback">
                             {{ $errors->first('gender') }}
+                        </div>
+                    @endif
+                </div>
+                <!-- Image -->
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image</label>
+                    <input type="file" class="form-control {{$errors->has('image') ? 'is-invalid' : ''}}" id="image" name="image">
+                    {{-- check error --}}
+                    @if ($errors->has('image'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('image') }}
                         </div>
                     @endif
                 </div>

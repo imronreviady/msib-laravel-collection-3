@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PostCreateRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -22,7 +24,7 @@ class PostController extends Controller
         // $posts = Post::paginate();
         // $posts = Post::all();
         // $posts = Post::get();
-        $posts = Post::has('categories',)->paginate(10);
+        $posts = Post::latest()->paginate(10);
 
         return view('posts.index', compact('posts'));
     }
@@ -62,6 +64,32 @@ class PostController extends Controller
 
         return redirect()->route('posts.index')->with('success', 'Post created successfully');
 
+    }
+
+    public function ajaxCreate(PostCreateRequest $request) {
+        try {
+            $post = new Post();
+            $post->title = $request->title;
+            $post->content = $request->content;
+            $post->user_id = $request->user_id;
+            $post->save();
+
+            // Mencatat kegiatan pembuatan postingan
+            Log::info("Postingan baru dibuat oleh User ID {$request->user_id}: {$post->title}");
+
+            return response()->json([
+                'message' => 'Post created successfully',
+                'data' => $post,
+            ]);
+        } catch (\Exception $e) {
+            // mencatat kesalahan jika terjadi
+            Log::error("Terjadi kesalahan saat membuat postingan: {$e->getMessage()}");
+            
+            return response()->json([
+                'message' => 'Post failed to create',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function edit($id) {
